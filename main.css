@@ -1,0 +1,242 @@
+body {
+	font-family: Google Sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+	font-size: 16px;
+	font-weight: 400;
+	color: #000;
+	background-color: #fff;
+	line-height: 1.5em;
+}
+
+.title {
+	font-family: Google Sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+	font-size: 200%;
+	font-weight: 500;
+	display: block;
+	text-align: center;
+	margin-top: 14px; /* h1 default */
+	margin-bottom: 14px;
+	padding-top: 40px;
+	padding-bottom: 5px;
+	line-height: 1.5em;
+}
+
+p.author {
+    font-size: 13pt;
+    text-align: center;
+    margin: 0 0 0 0;
+    padding: 0 3em 0 3em;
+}
+
+.author {
+	margin: 0pt 10pt;
+	line-height: 2em;
+}
+
+.affiliations {
+  display: flex;
+  justify-content: center;
+}
+
+.affiliations > img {
+	margin-left: 40px;
+	margin-right: 40px;
+}
+
+.deepmind-logo {
+  height: 30px;
+}
+
+.research-logo {
+  height: 24px;
+	margin-top: 5px;
+}
+
+.banner {
+	margin: 0.5em 0;
+}
+
+.section{
+	font-size: 130%;
+	font-weight: 400;
+	background: rgba(0,0,0,0.03);
+	padding-top: 0.5em;
+	padding-bottom: 0.5em;
+	/* padding-left: 0.5em; */
+}
+
+.paper-link {
+  width: 100%;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+a {
+  text-decoration: none;
+  border-bottom: solid 1px #ddd;
+  color: inherit;
+}
+
+a:hover {
+  border-bottom: solid 1px #999;
+}
+
+.container {
+	margin: auto;
+}
+
+@media only screen and (max-width: 800px) {
+	.container {
+	  width: 100%;
+	}
+}
+
+@media only screen and (min-width: 801px) {
+	.container {
+		width: 70%;
+		margin: auto;
+	}
+}
+
+.fullwidth {
+	width: 100%;
+}
+
+.text-to-3d-examples {
+  display: flex;
+  justify-content: space-between;
+	margin-bottom: 10px;
+}
+
+.text-to-3d-example {
+  width: calc(50% - 5px);
+	position: relative;
+}
+
+.teaser-video {
+	width: 100%;
+}
+
+.text-to-3d-caption {
+	opacity: 0.5;
+	color: white;
+	right: 10px;
+	bottom: 5px;
+	position: absolute;
+	text-align: right;
+	font-size: 80%;
+}
+
+.material-symbols-outlined {
+	cursor: pointer;
+}
+
+.material-symbols-outlined {
+  font-variation-settings:
+  'FILL' 0,
+  'wght' 100,
+  'GRAD' 0,
+  'opsz' 40
+}
+
+.viewers {
+  display: flex;
+  justify-content: space-between;
+}
+
+.viewer-3d {
+	position: relative;
+}
+
+.viewer-3d-label {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	opacity: 0.2;
+	text-shadow: 1px 1px 2px rgb(0 0 0 / 20%)
+}
+
+.viewer-3d-caption {
+	position: absolute;
+	width: 100%;
+	text-align: center;
+	bottom: 10px;
+	opacity: 0.5;
+}
+
+.viewer-3d-container {
+  width: calc(50% - 5px);
+}
+
+.viewer-3d:hover {
+  cursor: pointer;
+}
+
+.flex-container {
+	display: flex;
+	justify-content: center;
+}
+
+.architecture-caption {
+	margin-top: 0.5em;
+}
+
+.flex-container img {
+	width: 100%;
+	position: relative;
+}
+
+.table-flow-pretrain {
+	width: 59%;
+}
+
+.table-flow-finetune {
+	width: 41%;
+}
+
+figcaption {
+	text-align: center;
+	margin-top: 0.25em;
+}
+
+.table-depth {
+	width: 59%;
+}
+
+.table-depth-text {
+	width: 41%;
+	margin-top: 16px;
+}
+
+.table-depth-text > div {
+	margin-left: 40px;
+}
+
+.table-flow-dataset-ablation {
+	width: 56%;
+}
+
+.table-depth-dataset-ablation {
+	width: 44%;
+}
+
+.margin-top-1em {
+	margin-top: 1em;
+}
+
+.table-refine > .text {
+	width: 55%;
+	padding-top: 1em;
+}
+
+.table-refine > .table {
+	width: 45%;
+}
+
+.table-refine > .table > figure {
+	margin-left: 0;
+	margin-right: 0;
+}
+
+.table-refine .inner-text {
+	padding-right: 7%;
+}

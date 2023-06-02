@@ -1,1 +1,350 @@
+<html>
+<head>
+<title>DDVM - Denoising Diffusion Vision Model</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+<link type="text/css" rel="stylesheet" href="main.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@40,100,0,0" />
+</head>
+  <div class="container">
+    <p class="title">The Surprising Effectiveness of Diffusion Models for Optical Flow and Monocular Depth Estimation</p>
 
+    <p class="author">
+        <span class="author">Saurabh&nbsp;Saxena</span>
+        <span class="author">Charles&nbsp;Herrmann</span>
+        <span class="author">Junhwa&nbsp;Hur</span>
+        <span class="author">Abhishek&nbsp;Kar</span>
+        <span class="author">Mohammad&nbsp;Norouzi</span>
+        <span class="author">Deqing&nbsp;Sun</span>
+        <span class="author">David&nbsp;J.&nbsp;Fleet</span>
+    </p>
+
+    <p class="affiliations">
+      <img src="assets/logos/google_deepmind.png" class="deepmind-logo">
+      <img src="assets/logos/google_research.png" class="research-logo">
+    </p>
+
+    <!-- <div class="paper-link">
+      <a href="">Paper</a>
+    </div> -->
+
+    <img src="assets/banner.svg" class="fullwidth banner">
+
+    <p class="section">Abstract</p>
+    <p>
+      Denoising diffusion probabilistic models have transformed image generation with their impressive fidelity and diversity.
+      We show that they also excel in estimating optical flow and monocular depth, surprisingly, without task-specific architectures and loss functions that are predominant for these tasks.
+      Compared to the point estimates of conventional regression-based methods, diffusion models also enable Monte Carlo inference, e.g., capturing uncertainty and ambiguity in flow and depth.
+      With self-supervised pre-training, the combined use of synthetic and real data for supervised training, and technical innovations (infilling and step-unrolled denoising diffusion training) to handle noisy-incomplete training data, and a simple form of coarse-to-fine refinement, one can train state-of-the-art diffusion models for depth and optical flow estimation.
+      Extensive experiments focus on quantitative performance against benchmarks, ablations, and the model's ability to capture uncertainty and multimodality, and impute missing values. Our model, <b>DDVM (Denoising Diffusion Vision Model)</b>, obtains a state-of-the-art relative depth error of 0.074 on the indoor NYU benchmark and an Fl-all outlier rate of 3.26% on the KITTI  optical flow benchmark, about 25% better than the best published method.
+    </p>
+
+
+    <p class="section">SOTA results on optical flow and monocular depth estimation</p>
+    Our model achieves state-of-the-art results on the public test benchmark for optical flow estimation on KITTI and for monocular depth estimation on NYU.
+    <div class="flex-container">
+      <div class="table-flow-pretrain">
+        <figure>
+          <img src="assets/table_flow_pretrain.jpg">
+          <figcaption>Table 1: Flow pre-training results</figcaption>
+        </figure>
+
+      </div>
+      <div  class="table-flow-finetune">
+        <figure>
+          <img src="assets/table_flow_finetune.jpg">
+          <figcaption>Table 2: Flow fine-tuning results</figcaption>
+        </figure>
+      </div>
+    </div>
+    Zero-shot optical flow estimation results on Sintel and KITTI are shown in Table 1.
+    We provide a new RAFT baseline using our proposed pre-training mixture and substantially improve the accuracy over the original.
+    Our diffusion model outperforms even this much stronger baseline and  achieves state-of-the-art zero-shot results on Sintel.final and KITTI.
+    Table 2 shows results on the official <i>test</i> benchmarks for Sintel and KITTI for a model fine-tuned on a standard fine-tuning mixture.
+    Our model achieves an Fl-all outlier rate of 3.26% on the public KITTI test benchmark, <b>~25% lower than the best published method</b>.
+
+    <div class="flex-container">
+      <div class="table-depth">
+        <figure>
+          <img src="assets/table_depth.jpg">
+          <figcaption>Table 3: Monocular depth estimation results</figcaption>
+        </figure>
+      </div>
+      <div class="table-depth-text">
+        <div>
+          On the task of monocular depth estimation, our method achieves a state-of-the-art absolute relative error of 0.074 on the indoor NYU dataset
+          and a competitive absolute relative error of 0.055 on the KITTI dataset.
+        </div>
+      </div>
+    </div>
+
+    <p class="section">Synthetic training data</p>
+    AutoFlow (AF) has recently emerged as an effective dataset for optical flow pre-training.
+    Interestingly, we find that diffusion models trained with AutoFlow alone tend to provide very coarse flow estimates and can hallucinate shapes. The addition of FlyingThings (FT), Kubric (KU), and TartanAir (TA) remove the AF-induced bias toward polgonal-shaped regions, and significantly improve flow quality on fine detail, e.g. trees, thin structures, and motion boundaries.
+    <img src="assets/synthetic_flow.jpg" class="fullwidth margin-top-1em">
+    <div class="flex-container margin-top-1em">
+      <div class="table-flow-dataset-ablation">
+        <figure>
+          <img src="assets/table_flow_dataset_ablation.jpg">
+          <figcaption>Table 4: Pre-training datasets ablation for zero-shot flow estimation.</figcaption>
+        </figure>
+
+      </div>
+      <div class="table-depth-dataset-ablation">
+        <figure>
+          <img src="assets/table_depth_dataset_ablation.jpg">
+          <figcaption>Table 5: Pre-training datasets ablation for fine-tuning performance on NYU depth v2.</figcaption>
+        </figure>
+      </div>
+    </div>
+    Tables 4 and 5 show that adding synthetic data during pre-training substantially improves results for both zero-shot optical flow estimation and fine-tuning performance on monocular depth estimation.
+
+    <p class="section">Modified diffusion training for sparse label maps</p>
+
+    <div class="flex-container">
+      <figure style="width:100%">
+        <img src="assets/architecture.svg">
+        <figcaption class="architecture-caption">Denoising diffusion training with infilling and step-unrolling</figcaption>
+      </figure>
+    </div>
+
+    Given the presence of holes (missing labels) in groundtruth flow and depth data, the usual diffusion model training approach involving adding gaussian noise to the groundtruth label does not work due a training / inference distribution gap.
+    To mitigate this, we first infill missing values using interpolation. Then, we add noise to the label map and train a neural network to model the conditional distribution of the noise given the RGB image(s), noisy label, and time stamp. One can optionally unroll the denoising step(s) during training (with stop gradient) to bridge the distribution gap between training and inference for y<sub>t</sub>.
+
+
+    <div class="flex-container">
+      <figure style="width:80%">
+        <img src="assets/table_step_unroll_infill.jpg">
+        <figcaption>Table 6: Ablation for infilling and step-unrolled training.</figcaption>
+      </figure>
+    </div>
+
+    As the results in Table 6 show, simple nearest neighbor interpolation and step-unrolling effectively mitigate this problem.
+
+    <p class="section">Multimodal predictions</p>
+    <img src="assets/multimodal.jpg" class="fullwidth">
+    <p>
+    One strength of diffusion models is their ability to capture complex multimodal distributions. This can be effective in representing uncertainty, for example, in cases of transparent, translucent, or reflective cases.
+Above figure shows multiple samples on the NYU, KITTI, and Sintel datasets, showing that our model captures multimodality and provides plausible samples when ambiguities exist.
+</p>
+    <p class="section">Zero-shot coarse to fine refinement</p>
+    <div class="flex-container">
+      <img src="assets/coarse_to_fine_samples.jpg">
+    </div>
+
+    <div class="flex-container table-refine">
+      <div class="text">
+        <div class="inner-text">
+          For our pretrained model, refinement helps correct wrong flow and adds details to correct flow as shown in the figure above.
+        </div>
+      </div>
+
+      <div class="table">
+        <figure>
+          <img src="assets/table_refine.jpg" style="width: 100%">
+          <figcaption>Table 6: Coarse-to-fine refinement ablation for flow pre-training.</figcaption>
+        </figure>
+      </div>
+
+    </div>
+    <p class="section" id="text-to-3d">Zero-shot depth completion and text to 3D</p>
+
+    <div class="flex-container">
+      <img src="assets/depth_completion.jpg">
+    </div>
+
+
+    <p>
+    Another interesting property, arising the iterative refinement nature, of diffusion models is the ability to perform conditional inference <i>zero-shot</i>.
+    We leverage this to build a simple text-to-3D scene generation pipeline by combining our model with existing text-to-image (<a href="https://imagen.research.google">Imagen</a>) and text-conditioned image completion (<a href="https://imagen.research.google/editor">Imagen Editor</a>) models as shown in the figure above.
+    Below are 3D point clouds of some scenes generated from the respective text prompts (subsampled 10x for fast visualization).
+    </p>
+
+
+    <div class="viewers">
+      <div class="viewer-3d-container">
+        <div id="kitchen" class="viewer-3d">
+          <span class="viewer-3d-label">3D</span>
+          <span class="viewer-3d-caption">Caption: A kitchen</span>
+        </div>
+      </div>
+      <div class="viewer-3d-container">
+        <div id="bedroom" class="viewer-3d">
+          <span class="viewer-3d-label">3D</span>
+          <span class="viewer-3d-caption">Caption: A bedroom</span>
+        </div>
+      </div>
+    </div>
+
+    <p>
+      Below are more text to RGB-D results from our proposed system.
+    </p>
+
+    <div class="text-to-3d-examples">
+      <div class="text-to-3d-example">
+        <span class="text-to-3d-caption">
+          Caption: A living room
+        </span>
+        <video playsinline autoplay muted loop class="teaser-video">
+          <source src="assets/living.mp4" type="video/mp4" />
+        </video>
+      </div>
+
+      <div class="text-to-3d-example">
+        <span class="text-to-3d-caption">
+          Caption: A library
+        </span>
+        <video playsinline autoplay muted loop class="teaser-video">
+          <source src="assets/library.mp4" type="video/mp4" />
+        </video>
+      </div>
+    </div>
+
+    <div class="text-to-3d-examples">
+      <div class="text-to-3d-example">
+        <span class="text-to-3d-caption">
+          Caption: A meeting room
+        </span>
+        <video playsinline autoplay muted loop class="teaser-video">
+          <source src="assets/meeting.mp4" type="video/mp4" />
+        </video>
+      </div>
+
+      <div class="text-to-3d-example last">
+        <span class="text-to-3d-caption">
+          Caption: A movie theatre
+        </span>
+        <video playsinline autoplay muted loop class="teaser-video">
+          <source src="assets/theatre.mp4" type="video/mp4" />
+        </video>
+      </div>
+
+    </div>
+
+
+    <!-- <p class="section" id="BibTeX">BibTeX</p>
+
+    <blockquote>
+    <pre>
+@misc{saxena2023monocular,
+      title={Monocular Depth Estimation using Diffusion Models},
+      author={Saurabh Saxena and Abhishek Kar and Mohammad Norouzi and David J. Fleet},
+      year={2023},
+      eprint={2302.14816},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV}
+}
+      </pre>
+    </blockquote> -->
+
+
+  </div>
+
+  <script async src="https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js"></script>
+
+  <script type="module">
+
+    import * as THREE from "https://unpkg.com/three?module";
+
+    import { OrbitControls } from "https://unpkg.com/three/examples/jsm/controls/OrbitControls.js?module";
+    import { PCDLoader } from 'https://unpkg.com/three/examples/jsm/loaders/PCDLoader.js?module';
+
+    let cameras = [], scenes = [], renderers = [];
+    // let path = "assets/kitchen_every_10.pcd";
+    // let path = "assets/bedroom_every_10.pcd";
+    let renderer_elements = document.getElementsByClassName("viewer-3d");
+    let metadata = {
+      "kitchen": {
+        "path": "assets/kitchen_every_10.pcd",
+        "posx": 3,
+        "posy": 3,
+        "posz": 9,
+        "rotx": -0.25,
+        "roty": 0.5,
+        "rotz": 0.1,
+      },
+      "bedroom": {
+        "path": "assets/bedroom_every_10.pcd",
+        "posx": -0.07,
+        "posy": 0.41,
+        "posz": 10,
+        "rotx": -0.04,
+        "roty": 0.0,
+        "rotz": 0.0,
+      },
+    };
+
+    init();
+    render();
+
+    function init() {
+      for (let i = 0; i < renderer_elements.length; i++) {
+        let renderer_element = renderer_elements[i];
+        if (renderer_element.getElementsByTagName("canvas").length != 0) {
+          // Already initialized.
+          continue;
+        }
+        let data = metadata[renderer_element.id];
+        let path = data["path"];
+        let renderer = new THREE.WebGLRenderer( { antialias: true } );
+        renderers.push(renderer);
+        renderer.setPixelRatio( window.devicePixelRatio );
+        renderer.setSize( renderer_element.clientWidth, renderer_element.clientWidth );
+        renderer_element.appendChild( renderer.domElement );
+
+        let scene = new THREE.Scene();
+        scenes.push(scene);
+        scene.background = new THREE.Color( 0xeeeeee );
+
+        let camera = new THREE.PerspectiveCamera( 30, 1, 0.01, 40 );
+        cameras.push(camera);
+        // camera.position.set( 0, 0, 10 );
+        camera.position.set( data["posx"], data["posy"], data["posz"] );
+        camera.rotation.x = data["rotx"];
+        camera.rotation.y = data["roty"];
+        camera.rotation.z = data["rotz"];
+
+        scene.add( camera );
+
+        const controls = new OrbitControls( camera, renderer.domElement );
+        controls.addEventListener( 'change', render ); // use if there is no animation loop
+        controls.minDistance = 0.5;
+        controls.maxDistance = 10;
+
+        const loader = new PCDLoader();
+        loader.load( path, function ( points ) {
+
+          points.geometry.center();
+          points.geometry.rotateX( Math.PI );
+          points.name = path;
+          points.material.size *= 8;
+          scene.add( points );
+          render();
+        } );
+      }
+    }
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        for (const renderer of renderers) {
+          renderer.setSize( entry.contentRect.width, entry.contentRect.width );
+        }
+      }
+    });
+
+    for (const renderer_element of renderer_elements) {
+      resizeObserver.observe(renderer_element);
+    }
+
+    function render() {
+      for (let i = 0; i < scenes.length; i++) {
+        renderers[i].render( scenes[i], cameras[i] );
+      }
+    }
+
+  </script>
+
+</body>
+</html>
