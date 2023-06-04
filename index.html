@@ -21,10 +21,10 @@
         <span class="author">David&nbsp;J.&nbsp;Fleet</span>
     </p>
 
-    <p class="affiliations">
+    <div class="affiliations">
       <img src="assets/logos/google_deepmind.png" class="deepmind-logo">
       <img src="assets/logos/google_research.png" class="research-logo">
-    </p>
+    </div>
 
     <!-- <div class="paper-link">
       <a href="">Paper</a>
@@ -44,7 +44,7 @@
 
     <p class="section">SOTA results on optical flow and monocular depth estimation</p>
     Our model achieves state-of-the-art results on the public test benchmark for optical flow estimation on KITTI and for monocular depth estimation on NYU.
-    <div class="flex-container">
+    <div class="flex-container margin-top-1em margin-bottom-1em">
       <div class="table-flow-pretrain">
         <figure>
           <img src="assets/table_flow_pretrain.jpg">
@@ -65,26 +65,35 @@
     Table 2 shows results on the official <i>test</i> benchmarks for Sintel and KITTI for a model fine-tuned on a standard fine-tuning mixture.
     Our model achieves an Fl-all outlier rate of 3.26% on the public KITTI test benchmark, <b>~25% lower than the best published method</b>.
 
-    <div class="flex-container">
-      <div class="table-depth">
-        <figure>
-          <img src="assets/table_depth.jpg">
-          <figcaption>Table 3: Monocular depth estimation results</figcaption>
-        </figure>
-      </div>
-      <div class="table-depth-text">
-        <div>
-          On the task of monocular depth estimation, our method achieves a state-of-the-art absolute relative error of 0.074 on the indoor NYU dataset
-          and a competitive absolute relative error of 0.055 on the KITTI dataset.
-        </div>
-      </div>
+    <div class="margin-top-1em margin-bottom-1em">
+      <figure>
+        <img src="assets/table_depth.jpg" class="fullwidth">
+        <figcaption>Table 3: Monocular depth estimation results</figcaption>
+      </figure>
     </div>
+    On the task of monocular depth estimation, our method achieves a state-of-the-art absolute relative error of 0.074 on the indoor NYU dataset
+    and a competitive absolute relative error of 0.055 on the KITTI dataset.
 
     <p class="section">Synthetic training data</p>
     AutoFlow (AF) has recently emerged as an effective dataset for optical flow pre-training.
     Interestingly, we find that diffusion models trained with AutoFlow alone tend to provide very coarse flow estimates and can hallucinate shapes. The addition of FlyingThings (FT), Kubric (KU), and TartanAir (TA) remove the AF-induced bias toward polgonal-shaped regions, and significantly improve flow quality on fine detail, e.g. trees, thin structures, and motion boundaries.
     <img src="assets/synthetic_flow.jpg" class="fullwidth margin-top-1em">
-    <div class="flex-container margin-top-1em">
+    <!-- <div class="flex-container margin-top-1em margin-bottom-1em">
+      <div class="table-flow-dataset-ablation">
+        <figure>
+          <img src="assets/table_flow_dataset_ablation.jpg">
+          <figcaption>Table 4: Pre-training datasets ablation for zero-shot flow estimation.</figcaption>
+        </figure>
+
+      </div>
+      <div class="table-depth-dataset-ablation">
+        <figure>
+          <img src="assets/table_depth_dataset_ablation.jpg">
+          <figcaption>Table 5: Pre-training datasets ablation for fine-tuning performance on NYU depth v2.</figcaption>
+        </figure>
+      </div>
+    </div> -->
+    <div class="flex-container margin-top-1em margin-bottom-1em">
       <div class="table-flow-dataset-ablation">
         <figure>
           <img src="assets/table_flow_dataset_ablation.jpg">
@@ -104,7 +113,7 @@
     <p class="section">Modified diffusion training for sparse label maps</p>
 
     <div class="flex-container">
-      <figure style="width:100%">
+      <figure style="width:100%" class="architecture-figure margin-bottom-1em">
         <img src="assets/architecture.svg">
         <figcaption class="architecture-caption">Denoising diffusion training with infilling and step-unrolling</figcaption>
       </figure>
@@ -114,8 +123,8 @@
     To mitigate this, we first infill missing values using interpolation. Then, we add noise to the label map and train a neural network to model the conditional distribution of the noise given the RGB image(s), noisy label, and time stamp. One can optionally unroll the denoising step(s) during training (with stop gradient) to bridge the distribution gap between training and inference for y<sub>t</sub>.
 
 
-    <div class="flex-container">
-      <figure style="width:80%">
+    <div class="flex-container margin-top-1em margin-bottom-1em">
+      <figure class="fullwidth">
         <img src="assets/table_step_unroll_infill.jpg">
         <figcaption>Table 6: Ablation for infilling and step-unrolled training.</figcaption>
       </figure>
@@ -135,19 +144,17 @@ Above figure shows multiple samples on the NYU, KITTI, and Sintel datasets, show
     </div>
 
     <div class="flex-container table-refine">
+      <!-- <div class="table">
+        <figure>
+          <img src="assets/table_refine.jpg" style="width: 100%">
+          <figcaption>Table 6: Coarse-to-fine refinement ablation for flow pre-training.</figcaption>
+        </figure>
+      </div> -->
       <div class="text">
         <div class="inner-text">
           For our pretrained model, refinement helps correct wrong flow and adds details to correct flow as shown in the figure above.
         </div>
       </div>
-
-      <div class="table">
-        <figure>
-          <img src="assets/table_refine.jpg" style="width: 100%">
-          <figcaption>Table 6: Coarse-to-fine refinement ablation for flow pre-training.</figcaption>
-        </figure>
-      </div>
-
     </div>
     <p class="section" id="text-to-3d">Zero-shot depth completion and text to 3D</p>
 
