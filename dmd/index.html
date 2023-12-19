@@ -1,1 +1,457 @@
-Diffusion for Metric Depth
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="Zero-Shot Metric Depth with a Field-of-View Conditioned Diffusion Model">
+  <meta name="keywords" content="depth, estimation, monocular, scene, reconstruction">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta name="twitter:card" content="summary">
+  <!-- TODO: Update to full URL -->
+  <!-- TODO: Create new logo -->
+  <!-- <meta name="twitter:image:src" content="images/logo.jpg"> -->
+  <meta name="twitter:title" content="Zero-Shot Metric Depth with a Field-of-View Conditioned Diffusion Model">
+  <meta name="twitter:description" content="Zero-Shot Metric Depth with a Field-of-View Conditioned Diffusion Model">
+  <meta name="twitter:creator" content="@srbhsxn">
+
+  <title>Zero-Shot Metric Depth with a Field-of-View Conditioned Diffusion Model</title>
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-1FWSVCGZTG"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+
+    gtag('config', 'G-1FWSVCGZTG');
+  </script>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./css/bulma.min.css">
+  <link rel="stylesheet" href="./css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./css/twentytwenty.css">
+  <link rel="stylesheet" href="./css/index.css">
+  <!-- TODO: update -->
+  <!-- <link rel="icon" href="./images/favicon.svg"> -->
+
+  <script src="./js/jquery-3.2.1.min.js"></script>
+  <script src="./js/jquery.event.move.js"></script>
+  <script src="./js/jquery.twentytwenty.js"></script>
+  <script src="./js/bulma-carousel.min.js"></script>
+  <script src="./js/bulma-slider.min.js"></script>
+  <script src="./js/fontawesome.all.min.js"></script>
+
+  <!--MathJax-->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      },
+      svg: {
+        fontCache: 'global'
+      }
+    };
+  </script>
+  <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">Zero-Shot Metric Depth with a Field-of-View Conditioned Diffusion Model</h1>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="http://saurabhsaxena.org/" target="_blank" rel="noopener noreferrer">
+                Saurabh Saxena<sup>1</sup></a>,
+            </span>
+            <span class="author-block">
+              <a href="https://hurjunhwa.github.io/" target="_blank" rel="noopener noreferrer">
+                Junhwa Hur<sup>2</sup></a>,
+            </span>
+            <span class="author-block">
+              <a href="https://scholar.google.com/citations?user=LQvi5XAAAAAJ&hl=en" target="_blank" rel="noopener noreferrer">
+                Charles Herrmann<sup>2</sup></a>,
+            </span>
+            <span class="author-block">
+              <a href="https://deqings.github.io/" target="_blank" rel="noopener noreferrer">
+                Deqing Sun<sup>2</sup></a>,
+            </span>
+            <span class="author-block">
+              <a href="https://www.cs.toronto.edu/~fleet/" target="_blank" rel="noopener noreferrer">
+                David J. Fleet<sup>1</sup></a>
+            </span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"><sup>1</sup> Google DeepMind <sup>2</sup> Google Research</span>
+          </div>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <span class="link-block">
+                <!-- TODO: Add arxiv link -->
+                <a href="" target="_blank" rel="noopener noreferrer"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf" style="color: orangered"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="hero is-light is-small">
+  <div class="hero-body">
+    <div class="container">
+      <div id="results-carousel-horizontal" class="carousel results-carousel">
+
+        <div class="twoitem">
+          <div class="twentytwenty-container twentytwenty-container-top">
+            <div class="cmpcontent">
+              <img src="./images/samples/diode_indoor/image.png">
+            </div>
+            <div class="cmpcontent">
+              <img src="./images/samples/diode_indoor/gt.png">
+            </div>
+          </div>
+          <div class="twentytwenty-container twentytwenty-container-bottom">
+            <div class="cmpcontent">
+              <img src="./images/samples/diode_indoor/zoedepth.png">
+            </div>
+            <div class="cmpcontent">
+              <img src="./images/samples/diode_indoor/ours.png">
+            </div>
+          </div>
+        </div>
+
+        <div class="twoitem">
+          <div class="twentytwenty-container twentytwenty-container-top">
+            <div class="cmpcontent">
+              <img src="./images/samples/hypersim/image.png">
+            </div>
+            <div class="cmpcontent">
+              <img src="./images/samples/hypersim/gt.png">
+            </div>
+          </div>
+          <div class="twentytwenty-container twentytwenty-container-bottom">
+            <div class="cmpcontent">
+              <img src="./images/samples/hypersim/zoedepth.png">
+            </div>
+            <div class="cmpcontent">
+              <img src="./images/samples/hypersim/ours.png">
+            </div>
+          </div>
+        </div>
+
+        <div class="twoitem">
+          <div class="twentytwenty-container twentytwenty-container-top">
+            <div class="cmpcontent diml_outdoor">
+              <img src="./images/samples/diml_outdoor/image_2-new.png">
+            </div>
+            <div class="cmpcontent diml_outdoor">
+              <img src="./images/samples/diml_outdoor/gt_2-new.png">
+            </div>
+          </div>
+          <div class="twentytwenty-container twentytwenty-container-bottom">
+            <div class="cmpcontent diml_outdoor">
+              <img src="./images/samples/diml_outdoor/zoedepth_2-new.png">
+            </div>
+            <div class="cmpcontent diml_outdoor">
+              <img src="./images/samples/diml_outdoor/ours_2-new.png">
+            </div>
+          </div>
+        </div>
+
+        <div class="twoitem">
+          <div class="twentytwenty-container twentytwenty-container-top">
+            <div class="cmpcontent">
+              <img src="./images/samples/ibims/image.png">
+            </div>
+            <div class="cmpcontent">
+              <img src="./images/samples/ibims/gt.png">
+            </div>
+          </div>
+          <div class="twentytwenty-container twentytwenty-container-bottom">
+            <div class="cmpcontent">
+              <img src="./images/samples/ibims/zoedepth.png">
+            </div>
+            <div class="cmpcontent">
+              <img src="./images/samples/ibims/ours.png">
+            </div>
+          </div>
+        </div>
+
+        <div class="twoitem">
+          <div class="twentytwenty-container twentytwenty-container-top">
+            <div class="cmpcontent">
+              <img src="./images/samples/nyu/image.png">
+            </div>
+            <div class="cmpcontent">
+              <img src="./images/samples/nyu/gt.png">
+            </div>
+          </div>
+          <div class="twentytwenty-container twentytwenty-container-bottom">
+            <div class="cmpcontent">
+              <img src="./images/samples/nyu/zoedepth.png">
+            </div>
+            <div class="cmpcontent">
+              <img src="./images/samples/nyu/ours.png">
+            </div>
+          </div>
+        </div>
+
+        <div class="twoitem">
+          <div class="twentytwenty-container twentytwenty-container-top">
+            <div class="cmpcontent">
+              <img src="./images/samples/sunrgbd/image.png">
+            </div>
+            <div class="cmpcontent">
+              <img src="./images/samples/sunrgbd/gt.png">
+            </div>
+          </div>
+          <div class="twentytwenty-container twentytwenty-container-bottom">
+            <div class="cmpcontent">
+              <img src="./images/samples/sunrgbd/zoedepth.png">
+            </div>
+            <div class="cmpcontent">
+              <img src="./images/samples/sunrgbd/ours.png">
+            </div>
+          </div>
+        </div>
+
+        <div class="twoitem">
+          <div class="twentytwenty-container twentytwenty-container-top">
+            <div class="cmpcontent diml_outdoor">
+              <img src="./images/samples/diml_outdoor/image-new.png">
+            </div>
+            <div class="cmpcontent diml_outdoor">
+              <img src="./images/samples/diml_outdoor/gt-new.png">
+            </div>
+          </div>
+          <div class="twentytwenty-container twentytwenty-container-bottom">
+            <div class="cmpcontent diml_outdoor">
+              <img src="./images/samples/diml_outdoor/zoedepth-new.png">
+            </div>
+            <div class="cmpcontent diml_outdoor">
+              <img src="./images/samples/diml_outdoor/ours-new.png">
+            </div>
+          </div>
+        </div>
+
+        <div class="twoitem">
+          <div class="twentytwenty-container twentytwenty-container-top">
+            <div class="cmpcontent">
+              <img src="./images/samples/hypersim/image_1.png">
+            </div>
+            <div class="cmpcontent">
+              <img src="./images/samples/hypersim/gt_1.png">
+            </div>
+          </div>
+          <div class="twentytwenty-container twentytwenty-container-bottom">
+            <div class="cmpcontent">
+              <img src="./images/samples/hypersim/zoedepth_1.png">
+            </div>
+            <div class="cmpcontent">
+              <img src="./images/samples/hypersim/ours_1.png">
+            </div>
+          </div>
+        </div>
+
+        <div class="twoitem">
+          <div class="twentytwenty-container twentytwenty-container-top">
+            <div class="cmpcontent">
+              <img src="./images/samples/ibims/image_1.png">
+            </div>
+            <div class="cmpcontent">
+              <img src="./images/samples/ibims/gt_1.png">
+            </div>
+          </div>
+          <div class="twentytwenty-container twentytwenty-container-bottom">
+            <div class="cmpcontent">
+              <img src="./images/samples/ibims/zoedepth_1.png">
+            </div>
+            <div class="cmpcontent">
+              <img src="./images/samples/ibims/ours_1.png">
+            </div>
+          </div>
+        </div>
+
+        <div class="twoitem">
+          <div class="twentytwenty-container twentytwenty-container-top">
+            <div class="cmpcontent diml_outdoor">
+              <img src="./images/samples/diml_outdoor/image_1-new.png">
+            </div>
+            <div class="cmpcontent diml_outdoor">
+              <img src="./images/samples/diml_outdoor/gt_1-new.png">
+            </div>
+          </div>
+          <div class="twentytwenty-container twentytwenty-container-bottom">
+            <div class="cmpcontent diml_outdoor">
+              <img src="./images/samples/diml_outdoor/zoedepth_1-new.png">
+            </div>
+            <div class="cmpcontent diml_outdoor">
+              <img src="./images/samples/diml_outdoor/ours_1-new.png">
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+<!-- TODO: Add figure title -->
+<script>
+  $(window).on('load', function() {
+    bulmaCarousel.attach('#results-carousel-horizontal', {
+      slidesToScroll: 1,
+      slidesToShow: 3,
+      loop: true,
+      autoplay: false,
+    });
+
+    $(".twentytwenty-container-top").twentytwenty({
+      before_label: 'Input',
+      after_label: 'GT',
+      default_offset_pct: 0.75,
+    });
+    $(".twentytwenty-container-bottom").twentytwenty({
+      before_label: 'ZoeDepth',
+      after_label: 'Ours',
+      default_offset_pct: 0.5,
+    });
+  });
+</script>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- Abstract. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Overview</h2>
+        <div class="content has-text-justified">
+          <p>
+            Zero-shot metric depth estimation is challenging due to the large variation in RGB and depth between indoor and outdoor scenes and the depth-scale ambiguity due to unknown camera intrinsics.
+            We present <span class="methodname">DMD (Diffusion for Metric Depth)</span>, a state-of-the-art diffusion model for monocular absolute depth estimation.
+            We make several innovations such as the use of log-scale depth parameterization to enable joint modeling of indoor and outdoor scenes, conditioning on the field-of-view (FOV) to handle scale ambiguity and synthetically augmenting FOV during training to generalize beyond the limited camera intrinsics in training datasets.
+            Our method achieves a 25% reduction in relative error (REL) on zero-shot indoor and 33% reduction on zero-shot outdoor datasets over the current state-of-the-art using only a small number of denoising steps.
+          </p>
+        </div>
+      </div>
+    </div>
+    <!--/ Abstract. -->
+  </div>
+</section>
+
+<!-- TODO: remove vspace -->
+<!-- Method. -->
+<!-- <section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Method</h2>
+        <div class="content has-text-justified">
+          <h3 class="title has-text-centered">
+            Fine-tuning protocol
+          </h3>
+
+          <p>
+            Starting from a pretrained Stable Diffusion, we encode the image $x$ and depth $d$ into the latent space
+            using the original Stable Diffusion VAE.
+            We fine-tune just the U-Net by optimizing the standard diffusion objective relative to the depth latent code.
+            Image conditioning is achieved by concatenating the two latent codes before feeding them into the U-Net.
+            The first layer of the U-Net is modified to accept concatenated latent codes.
+          </p>
+
+          <img id="method_train" width="100%" src="./images/method_training_compressed.jpg" alt="Marigold training scheme"/>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section> -->
+<!--/ Method. -->
+
+<section class="section pt-0">
+  <div class="container is-max-desktop">
+    <!-- Results. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Results</h2>
+        <div class="content has-text-justified">
+          <p>
+            Quantitative comparison of <span class="methodname">DMD</span> with the current SOTA
+            for zero-shot metric depth estimation on indoor (first table) and outdoor (second table) scenes.
+            Our method improves performance by a large margin on both domains.
+          </p>
+
+          <img id="comparison" width="100%" src="./images/results_indoors.png" alt="Zero-shot results on indoor datasets."/>
+          <img id="comparison" width="100%" src="./images/results_outdoors.png" alt="Zero-shot results on outdoor datasets."/>
+
+        </div>
+      </div>
+    </div>
+    <!--/ Results. -->
+  </div>
+</section>
+
+
+<section class="section pt-0" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">Citation</h2>
+    <pre class="selectable"><code>@misc{saxena2023dmd,
+  title={Zero-Shot Metric Depth with a Field-of-View Conditioned Diffusion Model},
+  author={Saurabh Saxena and Junhwa Hur and Charles Herrmann and Deqing Sun and David J. Fleet},
+  year={2023},
+  eprint={},
+  archivePrefix={arXiv},
+  primaryClass={cs.CV}
+}</code></pre>
+  </div>
+</section>
+
+
+<footer class="footer pt-4 pb-0">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            Website template based on
+            <a href="https://github.com/nerfies/nerfies.github.io">
+              Nerfies
+            </a>
+            and
+            <a href="https://marigoldmonodepth.github.io/">
+              Marigold
+            </a>
+            and licensed under
+            <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">
+              CC-BY-SA-4.0
+            </a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
