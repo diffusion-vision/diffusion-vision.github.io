@@ -126,6 +126,44 @@
         <div class="twoitem">
           <div class="twentytwenty-container twentytwenty-container-top">
             <div class="cmpcontent">
+              <img src="./images/samples/hypersim/image_2.jpeg">
+            </div>
+            <div class="cmpcontent">
+              <img src="./images/samples/hypersim/gt_2.png">
+            </div>
+          </div>
+          <div class="twentytwenty-container twentytwenty-container-bottom">
+            <div class="cmpcontent">
+              <img src="./images/samples/hypersim/zoedepth_2.png">
+            </div>
+            <div class="cmpcontent">
+              <img src="./images/samples/hypersim/ours_2.png">
+            </div>
+          </div>
+        </div>
+
+        <div class="twoitem">
+          <div class="twentytwenty-container twentytwenty-container-top">
+            <div class="cmpcontent diml_outdoor">
+              <img src="./images/samples/diml_outdoor/image_3-new.jpeg">
+            </div>
+            <div class="cmpcontent diml_outdoor">
+              <img src="./images/samples/diml_outdoor/gt_3-new.png">
+            </div>
+          </div>
+          <div class="twentytwenty-container twentytwenty-container-bottom">
+            <div class="cmpcontent diml_outdoor">
+              <img src="./images/samples/diml_outdoor/zoedepth_3-new.png">
+            </div>
+            <div class="cmpcontent diml_outdoor">
+              <img src="./images/samples/diml_outdoor/ours_3-new.png">
+            </div>
+          </div>
+        </div>
+
+        <div class="twoitem">
+          <div class="twentytwenty-container twentytwenty-container-top">
+            <div class="cmpcontent">
               <img src="./images/samples/diode_indoor/image.png">
             </div>
             <div class="cmpcontent">
@@ -163,18 +201,18 @@
 
         <div class="twoitem">
           <div class="twentytwenty-container twentytwenty-container-top">
-            <div class="cmpcontent diml_outdoor">
+            <div class="cmpcontent">
               <img src="./images/samples/diml_outdoor/image_2-new.png">
             </div>
-            <div class="cmpcontent diml_outdoor">
+            <div class="cmpcontent">
               <img src="./images/samples/diml_outdoor/gt_2-new.png">
             </div>
           </div>
           <div class="twentytwenty-container twentytwenty-container-bottom">
-            <div class="cmpcontent diml_outdoor">
+            <div class="cmpcontent">
               <img src="./images/samples/diml_outdoor/zoedepth_2-new.png">
             </div>
-            <div class="cmpcontent diml_outdoor">
+            <div class="cmpcontent">
               <img src="./images/samples/diml_outdoor/ours_2-new.png">
             </div>
           </div>
@@ -195,25 +233,6 @@
             </div>
             <div class="cmpcontent">
               <img src="./images/samples/ibims/ours.png">
-            </div>
-          </div>
-        </div>
-
-        <div class="twoitem">
-          <div class="twentytwenty-container twentytwenty-container-top">
-            <div class="cmpcontent">
-              <img src="./images/samples/nyu/image.png">
-            </div>
-            <div class="cmpcontent">
-              <img src="./images/samples/nyu/gt.png">
-            </div>
-          </div>
-          <div class="twentytwenty-container twentytwenty-container-bottom">
-            <div class="cmpcontent">
-              <img src="./images/samples/nyu/zoedepth.png">
-            </div>
-            <div class="cmpcontent">
-              <img src="./images/samples/nyu/ours.png">
             </div>
           </div>
         </div>
@@ -252,25 +271,6 @@
             </div>
             <div class="cmpcontent diml_outdoor">
               <img src="./images/samples/diml_outdoor/ours-new.png">
-            </div>
-          </div>
-        </div>
-
-        <div class="twoitem">
-          <div class="twentytwenty-container twentytwenty-container-top">
-            <div class="cmpcontent">
-              <img src="./images/samples/hypersim/image_1.png">
-            </div>
-            <div class="cmpcontent">
-              <img src="./images/samples/hypersim/gt_1.png">
-            </div>
-          </div>
-          <div class="twentytwenty-container twentytwenty-container-bottom">
-            <div class="cmpcontent">
-              <img src="./images/samples/hypersim/zoedepth_1.png">
-            </div>
-            <div class="cmpcontent">
-              <img src="./images/samples/hypersim/ours_1.png">
             </div>
           </div>
         </div>
@@ -330,7 +330,7 @@
     $(".twentytwenty-container-top").twentytwenty({
       before_label: 'Input',
       after_label: 'GT',
-      default_offset_pct: 0.75,
+      default_offset_pct: 0.2,
     });
     $(".twentytwenty-container-bottom").twentytwenty({
       before_label: 'ZoeDepth',
@@ -360,34 +360,35 @@
   </div>
 </section>
 
-<!-- TODO: remove vspace -->
-<!-- Method. -->
-<!-- <section class="section">
+<section class="section pt-0">
   <div class="container is-max-desktop">
+    <!-- Method. -->
     <div class="columns is-centered has-text-centered">
       <div class="column is-four-fifths">
         <h2 class="title is-3">Method</h2>
         <div class="content has-text-justified">
-          <h3 class="title has-text-centered">
-            Fine-tuning protocol
-          </h3>
-
           <p>
-            Starting from a pretrained Stable Diffusion, we encode the image $x$ and depth $d$ into the latent space
-            using the original Stable Diffusion VAE.
-            We fine-tune just the U-Net by optimizing the standard diffusion objective relative to the depth latent code.
-            Image conditioning is achieved by concatenating the two latent codes before feeding them into the U-Net.
-            The first layer of the U-Net is modified to accept concatenated latent codes.
+            <ol>
+              <li> <b>Joint indoor-outdoor modelling:</b> Instead of linearly mapping the depth to [-1, 1], we parameterize depth in the log scale to more equitably allocate representation capacity between
+                indoor and outdoor scenes.
+                <!-- \[ d_{\mathrm{log}} = \mathrm{normalize} \left( \frac{ \log(d_{\mathrm{r}}/d_{\mathrm{min}})}{\log(d_{\mathrm{max}}/d_{\mathrm{min}})} \right) \]
+                where \( d_\mathrm{min} = 0.5m \) and \( d_\mathrm{max} = 80m \) denote the minimum and maximum supported depths. -->
+              </li>
+              <li> <b>Handling diverse camera intrinsics:</b> To avoid overfitting to training camera intrinsics, we propose augmenting training data by cropping and uncropping (with noise padding) to simulate diverse fields-of-view (FOV).
+                We further condition on the vertical FOV which we find is critical for disabiguating depth scale.</li>
+              <li> <b>Diverse training data:</b> We use a diverse fine-tuning mixture which dramatically improves performance over fine-tuning on the NYU and KITTI datasets alone. </li>
+              <li> <b>Inference latency:</b> We use the \( v \)-parameterization of diffusion instead of the commonly used \( \epsilon \)-parameterization which
+                which allows using as few as 1 denoising steps during inference (compared to 64 or more steps with \( \epsilon \)-parameterization).
+              </li>
+            </ol>
           </p>
-
-          <img id="method_train" width="100%" src="./images/method_training_compressed.jpg" alt="Marigold training scheme"/>
-
         </div>
       </div>
     </div>
+    <!--/ Method. -->
   </div>
-</section> -->
-<!--/ Method. -->
+</section>
+
 
 <section class="section pt-0">
   <div class="container is-max-desktop">
